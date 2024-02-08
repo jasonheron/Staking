@@ -1,0 +1,494 @@
+{
+    "version": "0.1.0",
+    "name": "football_staking",
+    "instructions": [
+        {
+            "name": "initPool",
+            "accounts": [
+                {
+                    "name": "stakePool",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "payer",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "systemProgram",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "ix",
+                    "type": {
+                        "defined": "InitPoolIx"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "updatePool",
+            "accounts": [
+                {
+                    "name": "stakePool",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "authority",
+                    "isMut": false,
+                    "isSigner": true
+                },
+                {
+                    "name": "payer",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "systemProgram",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "ix",
+                    "type": {
+                        "defined": "UpdatePoolIx"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "initStakeEntry",
+            "accounts": [
+                {
+                    "name": "stakeEntry",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "stakePool",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "stakeMint",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "payer",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "systemProgram",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": []
+        },
+        {
+            "name": "stakeCnft",
+            "accounts": [
+                {
+                    "name": "stakePool",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "stakeEntry",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "stakeMint",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "leafOwner",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "leafDelegate",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "treeAuthority",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "merkleTree",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "newLeafOwner",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "logWrapper",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "compressionProgram",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "bubblegumProgram",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "systemProgram",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "root",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "dataHash",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "creatorHash",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "index",
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "unstakeCnft",
+            "accounts": [
+                {
+                    "name": "stakePool",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "stakeEntry",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "stakeMint",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "payer",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "treeAuthority",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "merkleTree",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "logWrapper",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "compressionProgram",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "bubblegumProgram",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "systemProgram",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "root",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "dataHash",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "creatorHash",
+                    "type": {
+                        "array": [
+                            "u8",
+                            32
+                        ]
+                    }
+                },
+                {
+                    "name": "nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "index",
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "claimToken",
+            "accounts": [
+                {
+                    "name": "stakePool",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "stakeEntry",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "poolTokenAccount",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "userTokenAccount",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "payer",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "tokenProgram",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "systemProgram",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "transferAmount",
+                    "type": "u64"
+                }
+            ]
+        }
+    ],
+    "accounts": [
+        {
+            "name": "Pool",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    },
+                    {
+                        "name": "allowedCreators",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "minStakeSeconds",
+                        "type": "u32"
+                    },
+                    {
+                        "name": "authority",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "totalStakedEntries",
+                        "type": "u32"
+                    },
+                    {
+                        "name": "identifier",
+                        "type": "string"
+                    },
+                    {
+                        "name": "tokenAddress",
+                        "type": "publicKey"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "StakeEntry",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    },
+                    {
+                        "name": "pool",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "stakeMint",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "lastStaker",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "lastStakedAt",
+                        "type": "i64"
+                    }
+                ]
+            }
+        }
+    ],
+    "types": [
+        {
+            "name": "InitPoolIx",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "allowedCreators",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "minStakeSeconds",
+                        "type": "u32"
+                    },
+                    {
+                        "name": "identifier",
+                        "type": "string"
+                    },
+                    {
+                        "name": "tokenAddress",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "rewardAmount",
+                        "type": "u32"
+                    },
+                    {
+                        "name": "rewardSeconds",
+                        "type": "u32"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "UpdatePoolIx",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "minStakeSeconds",
+                        "type": "u32"
+                    }
+                ]
+            }
+        }
+    ],
+    "errors": [
+        {
+            "code": 6000,
+            "name": "InvalidStakePool",
+            "msg": "Invalid stake pool"
+        },
+        {
+            "code": 6001,
+            "name": "InvalidAdmin",
+            "msg": "Invalid Admin"
+        },
+        {
+            "code": 6002,
+            "name": "InvalidEscrow",
+            "msg": "Mismatched user and escrow"
+        },
+        {
+            "code": 6003,
+            "name": "MinStakeSecondsNotSatisfied",
+            "msg": "Minimum stake seconds not satisfied"
+        },
+        {
+            "code": 6020,
+            "name": "InvalidMintMetadata",
+            "msg": "Invalid mint metadata"
+        },
+        {
+            "code": 6021,
+            "name": "MintNotAllowedInPool",
+            "msg": "Mint not allowed in this pool"
+        },
+        {
+            "code": 6022,
+            "name": "InvalidMintMetadataOwner",
+            "msg": "Mint metadata is owned by the incorrect program"
+        }
+    ],
+    "metadata": {
+        "address": "predAmLng6SBHjPNmav1z6USrAMdLv3GhQkS1o6xfjo"
+      }
+}

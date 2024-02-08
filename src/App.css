@@ -1,0 +1,98 @@
+.stake-page{
+    display: flex;
+}
+
+.stake-container{
+    width: 95vw;
+}
+
+.staking-heading{
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
+    color: #fff;
+    font-size: 51px;
+    margin: 0;
+}
+
+.staking-para{
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    font-size: 22px;
+    margin: 0;
+
+}
+
+.staking-sub-para{
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 400;
+    color: #fff;
+    font-size: 22px;
+    margin: 0;
+}
+
+.reward-box{
+    background-color: #3B3B3B;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 4rem;
+    border-radius: 20px;
+}
+
+.reward-box p {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    font-size: 38px;
+}
+
+.reward-box button{
+    background: #A259FF;
+    padding: 10px 50px;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Work Sans', sans-serif;
+}
+
+.stake-box{
+    width: 100%;
+}
+
+.stake-box .stake-unstake-btns{
+    background: #2B2B2B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.stake-box .stake-unstake-btns button{
+    background: none;
+    width: 25%;
+    border: none;
+    color: #fff;
+    font-family: 'Work Sans', sans-serif;
+    padding: 1rem;
+    border-bottom:  1px solid rgba(0, 0, 0,0);
+}
+
+.border-bottom{
+    border-bottom:  1px solid #fff;
+}
+
+.stake-btn{
+    padding: 10px 20px;
+    background-color:#3B3B3B;
+    border: none;
+    color: #fff;
+    border-radius: 6px;
+    width: 150px;
+}
+
+.progress-circle{
+    position: absolute;
+    left: 10px;
+}
