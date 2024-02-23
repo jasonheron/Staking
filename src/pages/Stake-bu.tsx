@@ -94,8 +94,18 @@ const Stake = () => {
         const nftData: any = await program.account.stakeEntry.fetch(stakeEntry.toString())
         allstakedCnfts.push({data : asset,chainData : nftData})
         // console.log("asser",asset)
-      let filteredAttr = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
-      let filteredTeam = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+        let filteredAttr :any;
+        let filteredTeam : any;
+        if(asset?.content?.metadata?.attributes && asset?.content?.metadata?.attributes.length > 0){
+          filteredAttr = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
+          filteredTeam = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+        }else{
+          await axios.get(asset?.content?.json_uri).then((resp)=>{
+            // console.log(resp.data.attributes)
+          filteredAttr = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
+          filteredTeam = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+          })
+        }
 
       //@ts-ignore
       let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
