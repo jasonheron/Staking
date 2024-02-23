@@ -134,6 +134,7 @@ const Stake = () => {
       let matchesData : any;
       await axios.get(`https://v3.football.api-sports.io/fixtures?season=${season}&team=${filteredTeamId.id}&league=39&from=${startDate}&to=${endDate}`,{
           headers: {
+            'x-rapidapi-host': 'v3.football.api-sports.io',
             'X-RapidAPI-Key' : '126ab6d01ffa281853d1ae19f4c70a46'
           }
         }).then((res)=>{
