@@ -20,3 +20,5 @@ const useNFTs = (publicKey) => {
 
   return { nfts, isLoading };
 };
+
+export default useNFTs
