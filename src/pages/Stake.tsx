@@ -132,9 +132,9 @@ const Stake = () => {
 
 
       let matchesData : any;
-      await axios.get(`https://api-football-v1.p.rapidapi.com/v3/fixtures?season=${season}&team=${filteredTeamId.id}&league=39&from=${startDate}&to=${endDate}`,{
+      await axios.get(`https://v3.football.api-sports.io/fixtures?season=${season}&team=${filteredTeamId.id}&league=39&from=${startDate}&to=${endDate}`,{
           headers: {
-            'X-RapidAPI-Key' : '19978d8ad8msh966959f511c0cedp1fbbacjsnd4ed69eb1e78'
+            'X-RapidAPI-Key' : '126ab6d01ffa281853d1ae19f4c70a46'
           }
         }).then((res)=>{
           matchesData = res.data.response;
