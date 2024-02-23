@@ -7,6 +7,7 @@ const Index = ({data, isSelected} : any) => {
 
     const [nftData, setNftData] = useState<any>()
     const [rarityData, setRarityData] = useState<any>()
+    const [teamName, setTeamName] = useState<any>()
     // console.log(data)
 
     const getNftData = async () =>{
@@ -30,7 +31,9 @@ const Index = ({data, isSelected} : any) => {
     useEffect(() => {
         if(nftData){
           let filteredAttr = nftData.attributes.filter((item:any)=> item.trait_type === 'Rarity')
+          let filteredTeam = nftData.attributes.filter((item:any)=> item.trait_type === 'Team')
           setRarityData(filteredAttr)
+          setTeamName(filteredTeam)
         }
       }, [nftData])
     
@@ -44,18 +47,22 @@ const Index = ({data, isSelected} : any) => {
         <img src={nftData?.image} alt="nft" className='w-100' />
         <div className='nft-details-container'>
             <p className='nft-name'>{nftData?.name}</p>
-            <p className='nft-collection'>{nftData?.symbol}</p>
+            <p className='nft-collection'>
+            {teamName ? teamName.map((e:any)=>
+                    <span className='text-2' key={e}>{e.value}</span>
+                    ) : null}
+            </p>
             <div className='d-flex align-items-center justify-content-between'>
                 <div className='nft-details'>
                     <p className='text-1'>Rarity</p>
                     {rarityData ? rarityData.map((e:any)=>{
-                        return <p className='text-2' key={e}>{e.value}</p>
+                        return <span className='text-2' key={e}>{e.value}</span>
                     }) : null}
                 </div>
                 <div className='nft-details text-end'>
                     <p className='text-1'>$asd for win</p>
                     {rarityData ? rarityData.map((e:any)=>{
-                        return <p className='text-2' key={e}>{e.value === 'Gold' ?50 : e.value === 'Silver' ? 20 : 10 }</p>
+                        return <span className='text-2' key={e}>{e.value === 'Gold' ?50 : e.value === 'Silver' ? 20 : 10 }</span>
                     }) : null}
                 </div>
             </div>

@@ -132,53 +132,33 @@ export const initStakePoolEntry = async (wallet: AnchorWallet, token: PublicKey,
 
 }
 
-export const stakeCnft = async (wallet: AnchorWallet, nftAddress: PublicKey, poolId : PublicKey, treeId : String) => {
+export const stakeCnft = async (wallet: AnchorWallet, nftData: any, poolId : PublicKey) => {
   try {
     const provider = getProvider(wallet)
     const program = new anchor.Program(idl as anchor.Idl, idl.metadata.address, provider);
-
     const tx: Transaction = new Transaction();
-
-
-
-    const assetId = nftAddress.toString();
-    const asset = await getAsset(assetId);
-    // console.log(res)
-  
+    const assetId = nftData.id;
     const proof = await getAssetProof(assetId);
     const proofPathAsAccounts = mapProof(proof);
-  
     const root = decode(proof.root);
-    const dataHash = decode(asset.compression.data_hash);
-    const creatorHash = decode(asset.compression.creator_hash);
-    const nonce = new anchor.BN(asset.compression.leaf_id);
-    const index = asset.compression.leaf_id;
-
-
-    const stakeEntry = findStakeEntryId(poolId, nftAddress)
-
+    const dataHash = decode(nftData.compression.data_hash);
+    const creatorHash = decode(nftData.compression.creator_hash);
+    const nonce = new anchor.BN(nftData.compression.leaf_id);
+    const index = nftData.compression.leaf_id;
+    const stakeEntry = findStakeEntryId(poolId, new PublicKey(nftData.id))
     const stakeEntryId = await connection.getAccountInfo(stakeEntry)
     if (stakeEntryId === null) {
-      const txn = await initStakePoolEntry(wallet, nftAddress, poolId, stakeEntry)
+      const txn = await initStakePoolEntry(wallet, new PublicKey(nftData.id), poolId, stakeEntry)
       tx.add(txn)
     }
 
-    const tree = new anchor.web3.PublicKey(
-      treeId
-    );
-  
-    const [treeAuthority, _bump2] = anchor.web3.PublicKey.findProgramAddressSync(
-      [tree.toBuffer()],
-      BUBBLEGUM_PROGRAM_ID
-    );
-
-
-
+    const tree = new anchor.web3.PublicKey(nftData.compression.tree);
+    const treeAuthority = new PublicKey("EC6HPQa6CRxRV33dNgTX75Bte1gtVoWyL4MreqEx2g9u");
 
     const txn = await program.methods.stakeCnft(root, dataHash, creatorHash, nonce, index).accounts({
       stakePool: poolId,
       stakeEntry: stakeEntry,
-      stakeMint: nftAddress,
+      stakeMint: new PublicKey(nftData.id),
       leafOwner: wallet.publicKey,
       leafDelegate: wallet.publicKey,
       treeAuthority: treeAuthority,
@@ -209,29 +189,18 @@ export const unStakeCnft = async (wallet: AnchorWallet, nftAddress: PublicKey, p
     const tx: Transaction = new Transaction();
     const assetId = nftAddress.toString();
     const asset = await getAsset(assetId);
-    
-    
     const proof = await getAssetProof(assetId);
     const proofPathAsAccounts = mapProof(proof);
-    
     const root = decode(proof.root);
     const dataHash = decode(asset.compression.data_hash);
     const creatorHash = decode(asset.compression.creator_hash);
     const nonce = new anchor.BN(asset.compression.leaf_id);
     const index = asset.compression.leaf_id;
     
-    
     const stakeEntry = findStakeEntryId(poolId, nftAddress)
     
     const tree = new anchor.web3.PublicKey(treeId);
-    
-    const [treeAuthority, _bump2] = anchor.web3.PublicKey.findProgramAddressSync(
-      [tree.toBuffer()],
-      BUBBLEGUM_PROGRAM_ID
-      );
-      
-      
-
+    const treeAuthority = new PublicKey("EC6HPQa6CRxRV33dNgTX75Bte1gtVoWyL4MreqEx2g9u");
 
     const txn = await program.methods.unstakeCnft(root, dataHash, creatorHash, nonce, index).accounts({
       stakePool: poolId,
@@ -245,13 +214,8 @@ export const unStakeCnft = async (wallet: AnchorWallet, nftAddress: PublicKey, p
       compressionProgram: SPL_ACCOUNT_COMPRESSION_PROGRAM_ID,
       systemProgram: anchor.web3.SystemProgram.programId,
     }).remainingAccounts(proofPathAsAccounts).instruction()
-
     tx.add(txn)
-
     return tx
-
-
-
   } catch (e) {
     console.log(e)
   }
@@ -267,12 +231,7 @@ export const claimCnftsTokens = async (wallet: AnchorWallet, nftAddress: PublicK
 
     const assetId = nftAddress.toString();
     const asset = await getAsset(assetId);
-    
-    
-    const proof = await getAssetProof(assetId);
-    const proofPathAsAccounts = mapProof(proof);
-    
-    
+
     const stakeEntry = findStakeEntryId(poolId, nftAddress)
     
       const rewardToken = new PublicKey("AnEbhE8xmiRpT621RF6PtRQPUCT67QyRLhbizKFiZVv4");
@@ -281,13 +240,20 @@ export const claimCnftsTokens = async (wallet: AnchorWallet, nftAddress: PublicK
       const walletTokenAccount = await getAssociatedTokenAddress(rewardToken,wallet.publicKey);
       const nftData: any = await program.account.stakeEntry.fetch(stakeEntry.toString())
       
-      // console.log("nft chain data : ",nftData, nftData.lastStakedAt.toNumber())
       
       let tokenAccount = await connection.getAccountInfo(walletTokenAccount)
       
-      // console.log("asser",asset)
-      let filteredAttr = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
-      let filteredTeam = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+      let filteredAttr :any;
+        let filteredTeam : any;
+        if(asset?.content?.metadata?.attributes && asset?.content?.metadata?.attributes.length > 0){
+          filteredAttr = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
+          filteredTeam = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+        }else{
+          await axios.get(asset?.content?.json_uri).then((resp)=>{
+          filteredAttr = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
+          filteredTeam = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+          })
+        }
 
       let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
       
@@ -362,7 +328,7 @@ export const claimCnftsTokens = async (wallet: AnchorWallet, nftAddress: PublicK
       );
     }
 
-    const txn = await program.methods.claimToken(new anchor.BN(1*100)).accounts({
+    const txn = await program.methods.claimToken(new anchor.BN(amountToTransfer*100)).accounts({
       stakePool: poolId,
       stakeEntry: stakeEntry,
       poolTokenAccount : poolTokenAccount,
@@ -373,7 +339,6 @@ export const claimCnftsTokens = async (wallet: AnchorWallet, nftAddress: PublicK
     }).instruction()
 
 
-    console.log(tx)
 
     tx.add(txn)
 

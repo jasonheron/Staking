@@ -18,6 +18,7 @@ root.render(
     <BrowserRouter>
     <ToastContainer/>
       <Wallet />
+      {/* <div className='text-white text-center'>Under Maintenance</div> */}
     </BrowserRouter>
   </React.StrictMode>
 );

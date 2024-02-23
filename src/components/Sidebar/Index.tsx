@@ -12,7 +12,7 @@ const Index = () => {
     return (
         <React.Fragment>
             <div className='sidebar-container'>
-                <img src={logo} alt="logo" />
+                <img src={logo} alt="logo" className='logo'/>
                 <div>
                     <img src={burger} alt="burger" />
                     <img src={dashboard} alt="dashboard" />

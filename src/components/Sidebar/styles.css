@@ -19,3 +19,24 @@
 .sidebar-container div img{
     cursor: pointer;
 }
+
+@media (max-width : 1024px) and (min-width : 768px){    
+    .sidebar-container .logo{
+        width: 40px;
+    }
+}
+
+@media (max-width : 767px) and (min-width : 600px){    
+    .sidebar-container .logo{
+        width: 40px;
+    }
+}
+
+@media (max-width : 599px){    
+    .sidebar-container{
+        display: none;
+    }
+    .sidebar-container .logo{
+        width: 40px;
+    }
+}

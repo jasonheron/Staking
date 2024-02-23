@@ -57,3 +57,17 @@
     font-family: 'Roboto', sans-serif;
 
 }
+
+@media (max-width : 500px){
+    .nft-details-container{
+        padding: 0.5rem !important;
+    }
+    
+    .nft-name{
+        font-size: 16px !important;
+    }
+    
+    .nft-collection{
+        font-size: 14px !important;
+    }
+}

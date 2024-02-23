@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import NavBar from '../components/NavBar/NavBar'
 import SideBar from "../components/Sidebar/Index"
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination } from 'swiper/modules';
 import { Navigation } from 'swiper/modules';
 import NftCard from "../components/Nftcard/Index"
 import StakedCard from "../components/stakedCard/Index"
@@ -10,12 +9,12 @@ import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { useAnchorWallet, useWallet } from '@solana/wallet-adapter-react';
 import { dasApi } from '@metaplex-foundation/digital-asset-standard-api';
 import { PublicKey, Transaction } from '@solana/web3.js';
-import { stakeCnft, unStakeCnft, teams, getProvider, getStakeEntry, findStakeEntryId, claimCnftsTokens } from '../types/staking-func';
+import { stakeCnft, unStakeCnft, teams, getProvider, findStakeEntryId, claimCnftsTokens } from '../types/staking-func';
 import * as anchor from "@project-serum/anchor"
 import { connection } from '../types/environment';
 import useStakePoolData from '../hooks/useStakePoolData';
 import useStakePoolEntries from '../hooks/stakePoolEntries';
-import { Spinner } from 'react-bootstrap';
+import { Spinner, Row, Col } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import idl from "../types/idl.json"
 import axios from 'axios';
@@ -44,6 +43,8 @@ const Stake = () => {
   const [fetchDone, setFetchDone] = useState(true)
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [claimableTokens, setClaimableTokens] = useState<number>(0)
+  const [stakeLoading, setStakeLoading] = useState<boolean>(false)
+  const [unstakeLoading, setUnstakeLoading] = useState<boolean>(false)
   umi.use(dasApi())
 
   const getCnfts = async () => {
@@ -93,8 +94,18 @@ const Stake = () => {
         const nftData: any = await program.account.stakeEntry.fetch(stakeEntry.toString())
         allstakedCnfts.push({data : asset,chainData : nftData})
         // console.log("asser",asset)
-      let filteredAttr = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
-      let filteredTeam = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+        let filteredAttr :any;
+        let filteredTeam : any;
+        if(asset?.content?.metadata?.attributes && asset?.content?.metadata?.attributes.length > 0){
+          filteredAttr = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
+          filteredTeam = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+        }else{
+          await axios.get(asset?.content?.json_uri).then((resp)=>{
+            // console.log(resp.data.attributes)
+          filteredAttr = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
+          filteredTeam = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+          })
+        }
 
       //@ts-ignore
       let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
@@ -182,13 +193,16 @@ const Stake = () => {
 
   const stakeNfts = async () => {
     try {
+      setStakeLoading(true)
       if (publicKey && wallet) {
         if (!wallet) {
+        setStakeLoading(false)
           return
         }
 
         if (stakeNftList.length <= 0) {
           toast.error("Please Select Nfts To Stake !")
+        setStakeLoading(false)
           return
         }
 
@@ -197,7 +211,7 @@ const Stake = () => {
         const allTx: Transaction[] = [];
 
         for (let entry of stakeNftList) {
-          const tx: Transaction | undefined = await stakeCnft(wallet, new PublicKey(entry), stakePoolData.poolId, tree)
+          const tx: Transaction | undefined = await stakeCnft(wallet, entry, stakePoolData.poolId)
           if (!tx) {
             return
           }
@@ -223,9 +237,11 @@ const Stake = () => {
         }, 5000);
         setUnStakeNftList([])
         setStakeNftList([]);
+        setStakeLoading(false)
         toast.success("Staked Succesfully")
       }
     } catch (e: any) {
+      setStakeLoading(false)
       toast.error(e.message)
       console.log(e)
     }
@@ -234,13 +250,16 @@ const Stake = () => {
 
   const unStakeNfts = async () => {
     try {
+      setUnstakeLoading(true)
       if (publicKey && wallet) {
         if (!wallet) {
+      setUnstakeLoading(false)
           return
         }
 
         if (unStakeNftList.length <= 0) {
           toast.error("Please Select Nfts To UnStake !")
+      setUnstakeLoading(false)
           return
         }
 
@@ -287,9 +306,11 @@ const Stake = () => {
         }, 5000);
         setUnStakeNftList([])
         setStakeNftList([]);
+      setUnstakeLoading(false)
         toast.success("Unstaked Succesfully")
       }
     } catch (e: any) {
+      setUnstakeLoading(false)
       if(e.message.includes('0x1773')){
         toast.error('You cannot unstake NFT at the moment')
       }else{
@@ -366,15 +387,15 @@ const Stake = () => {
     setIsStakedSelected(false)
   }
 
-  const setStakeNft = (id: any, treeId: any) => {
-    setTree(treeId)
+  const setStakeNft = (cnft: any) => {
+    // setTree(treeId)
     let updatedEntries = [...stakeNftList];
-    const index = updatedEntries.findIndex(entry => entry === id);
+    const index = updatedEntries.findIndex(entry => entry.id === cnft.id);
 
     if (index !== -1) {
       updatedEntries.splice(index, 1);
     } else {
-      updatedEntries.push(id);
+      updatedEntries.push(cnft);
     }
     setStakeNftList(updatedEntries);
   };
@@ -394,14 +415,9 @@ const Stake = () => {
   };
 
   const selectAllStakeEntries = () =>{
-    let allStakeEntries : any[] = [];
     if(stakeNftList.length !== cnfts.length ){
       setStakeNftList([])
-      cnfts.forEach((cft:any)=>{
-        setTree(cft.compression.tree)
-        allStakeEntries.push(cft.id)
-      })
-      setStakeNftList(allStakeEntries)
+      setStakeNftList(cnfts)
     }else{
       setStakeNftList([])
     }
@@ -438,6 +454,8 @@ const Stake = () => {
     }
   }, [publicKey, stakePoolData, stakedPoolEntries])
 
+  // console.log(cnfts)
+
 
   return (
     <React.Fragment>
@@ -445,14 +463,14 @@ const Stake = () => {
         <SideBar />
         <div className='stake-container'>
           <NavBar />
-          <div className='m-4 row'>
-            <div className="staking-texts col-lg-9 col-md-9">
+          <div className='m-lg-4 m-mb-3 m-sm-1 m-1 row align-items-center'>
+            <div className="staking-texts col-xl-9 col-lg-12 col-md-12 col-sm-12 col-12">
               <h2 className="staking-heading">Back Your Team | Staking</h2>
               <p className="staking-para">They win, you win. Each badge staked earns $asd based on real life wins.</p>
               <p className="staking-sub-para">Gold = 50 for a win, 25 for a draw - Silver = 20 for a win, 10 for a draw - Bronze = 10 for a win, 5 for a draw.
                 Badges must be staked prior to the game week to count towards $asd allocation.</p>
             </div>
-            <div className="reward-box col-lg-3 col-md-3">
+            <div className="reward-box col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12">
               <p className="reward-amount mb-0">{claimableTokens} $ASD</p>
               <button className="claim-btn" onClick={claimTokens} >CLAIM</button>
             </div>
@@ -468,46 +486,36 @@ const Stake = () => {
               <button className={!isStakedSelected ? "border-bottom" : ""} onClick={selectUnStaked}>Unstaked</button>
               <button className={isStakedSelected ? "border-bottom" : ""} onClick={selectStaked} >Staked</button>
             </div>
-            {isStakedSelected ? <div className='my-5 mx-2'>
-              <Swiper
-                slidesPerView={6}
-                spaceBetween={30}
-                navigation={true}
-                modules={[Navigation]}
-                className="mySwiper"
-              >
-                {stakedCnfts ? stakedCnfts.map((item: any) => (
-                  <SwiperSlide key={item?.data?.id} onClick={() => { setUnStakeNft(item.data.id, item.data.compression.tree) }}><StakedCard data={item} stakeSeconds={stakePoolData?.minStakeSeconds} isSelected={unStakeNftList?.includes(item.data.id)} /></SwiperSlide>
+            {isStakedSelected ? <div className='my-lg-5 my-mb-3 my-sm-2 my-2 mx-2 staking-cards-container'>
+            <Row className='w-100 m-auto'>
+            {stakedCnfts ? stakedCnfts.map((item: any) => (
+                <Col xl={2} lg={3} md={4} sm={6} xs={6} key={item?.data?.id} onClick={() => { setUnStakeNft(item.data.id, item.data.compression.tree) }} className='mb-3' >
+                  <StakedCard data={item} stakeSeconds={stakePoolData?.minStakeSeconds} isSelected={unStakeNftList?.includes(item.data.id)} />
+                </Col>
                 )) : null}
-              </Swiper>
-
-            </div> : <div className='my-5 mx-2'>
-              <Swiper
-                slidesPerView={6}
-                spaceBetween={30}
-                navigation={true}
-                modules={[Navigation]}
-                className="mySwiper"
-              >
-                {cnfts ? cnfts.map((item: any) => (
-                  <SwiperSlide key={item.id} onClick={() => { setStakeNft(item.id, item.compression.tree) }}><NftCard data={item} isSelected={stakeNftList?.includes(item.id)} /></SwiperSlide>
+            </Row>
+            </div> : <div className='my-lg-3 my-mb-2 my-sm-2 my-2 mx-2 staking-cards-container'>
+            <Row className='w-100 m-auto'>
+            {cnfts ? cnfts.map((item: any) => (
+                <Col xl={2} lg={3} md={4} sm={6} xs={6} key={item.id} onClick={() => { setStakeNft(item) }} className='mb-3' >
+                  <NftCard data={item} isSelected={!!stakeNftList?.some(stakedNft => stakedNft.id === item.id)} />
+                </Col>
                 )) : null}
-              </Swiper>
-
+            </Row>
             </div>}
 
-            <div className='d-flex align-items-center justify-content-center w-100'>
+            <div className='d-flex align-items-center justify-content-center position-sticky staking-btns-container'>
               {isStakedSelected ?
                 stakedCnfts && stakedCnfts.length > 0 ? 
                 <div className='d-flex align-item-center gap-3'>
-                  <button className="stake-btn" onClick={selectAllUnStakeEntries} >Select All</button>
-                  <button className="stake-btn" onClick={unStakeNfts}>Unstake</button>                  
+                  <button className="select-btn" onClick={selectAllUnStakeEntries} >Select All</button>
+                  <button className="stake-btn btn-loader" onClick={unStakeNfts} disabled={unstakeLoading} >Unstake { unstakeLoading ? <div className='stake-loading'><Spinner animation="border" variant="light" /></div>: null} </button>                  
                 </div> : null
                 :
                 cnfts && cnfts.length > 0 ? 
                 <div className='d-flex align-item-center gap-3'>
-                  <button className="stake-btn" onClick={selectAllStakeEntries}>Select All</button>
-                  <button className="stake-btn" onClick={stakeNfts}>Stake</button>
+                  <button className="select-btn" onClick={selectAllStakeEntries}>Select All</button>
+                  <button className="stake-btn btn-loader" onClick={stakeNfts} disabled={stakeLoading} >Stake {stakeLoading ? <div className='stake-loading'><Spinner animation="border" variant="light" /></div>: null} </button>
                 </div> : null
               }
             </div>
