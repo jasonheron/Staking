@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import React, { useState, useEffect } from 'react';
 import NavBar from '../components/NavBar/NavBar';
 import SideBar from "../components/Sidebar/Index";
@@ -7,11 +8,24 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import useNFTs from '../hooks/useNFTs'; // Assuming you've created this custom hook
 import { Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+=======
+import React, { useState, useEffect, useCallback } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import useNFTs from '../hooks/useNFTs'; // Custom hook to fetch NFTs
+import NavBar from '../components/NavBar/NavBar'; // NavBar component
+import SideBar from "../components/Sidebar/Index"; // SideBar component
+import NftCard from "../components/Nftcard/Index"; // NFT card component for unstaked NFTs
+import StakedCard from "../components/stakedCard/Index"; // Staked card component for staked NFTs
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'; // UMI bundle defaults
+import { toast } from 'react-toastify';
+import axios from 'axios';
+>>>>>>> Stashed changes
 
 const Stake = () => {
   const { publicKey } = useWallet();
   const { nfts, isLoading: isLoadingNfts } = useNFTs(publicKey);
   const [isStakedSelected, setIsStakedSelected] = useState(false);
+<<<<<<< Updated upstream
 
   // Dummy state for staked NFTs and claimable tokens for demonstration
   const [stakedNfts, setStakedNfts] = useState([]);
@@ -39,11 +53,30 @@ const Stake = () => {
 
   if (isLoadingNfts) return <div className='progress-circle'><Spinner animation="border" variant="light" /></div>;
 
+=======
+  const [claimableTokens, setClaimableTokens] = useState(0);
+
+  const fetchClaimableTokens = useCallback(async () => {
+    // Fetch logic...
+  }, [publicKey]);
+
+  useEffect(() => {
+    fetchClaimableTokens();
+  }, [fetchClaimableTokens]);
+
+  const selectStaked = useCallback(() => setIsStakedSelected(true), []);
+  const selectUnStaked = useCallback(() => setIsStakedSelected(false), []);
+
+  // Staking and unstaking handlers...
+  
+>>>>>>> Stashed changes
   return (
     <React.Fragment>
+      <NavBar /> {/* NavBar included */}
+      <SideBar /> {/* SideBar included */}
       <div className='stake-page'>
-        <SideBar />
         <div className='stake-container'>
+<<<<<<< Updated upstream
           <NavBar />
           <div className='m-lg-4 m-mb-3 m-sm-1 m-1 row align-items-center'>
             <div className="staking-texts col-xl-9 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -75,10 +108,32 @@ const Stake = () => {
               </div>
             )}
           </div>
+=======
+          {/* Stake page content */}
+          {isStakedSelected ? (
+            <div className='staked-cards'>
+              {/* Render Staked NFTs */}
+              {nfts.map(nft => (
+                <StakedCard key={nft.id} nft={nft} onUnstake={handleUnstake} />
+              ))}
+            </div>
+          ) : (
+            <div className='unstaked-cards'>
+              {/* Render Unstaked NFTs */}
+              {nfts.map(nft => (
+                <NftCard key={nft.id} nft={nft} onStake={handleStake} />
+              ))}
+            </div>
+          )}
+>>>>>>> Stashed changes
         </div>
       </div>
     </React.Fragment>
   );
 };
 
+<<<<<<< Updated upstream
 export default Stake
+=======
+export default Stake;
+>>>>>>> Stashed changes
