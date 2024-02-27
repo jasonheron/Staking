@@ -73,113 +73,98 @@ const Stake = () => {
 
   const getStakedCnfts = async () => {
     try {
-      if (!publicKey) return
-      if (!wallet) return
-      if (!stakedPoolEntries) return
-      setIsLoading(true)
-      const provider = getProvider(wallet)
+      if (!publicKey) return;
+      if (!wallet) return;
+      if (!stakedPoolEntries) return;
+  
+      setIsLoading(true);
+      const provider = getProvider(wallet);
       const program = new anchor.Program(idl as anchor.Idl, idl.metadata.address, provider);
-
-      let allstakedCnfts: any[] = []
-
-      let amountToTransfer = 0
-
+  
+      let allstakedCnfts: any[] = [];
+      let amountToTransfer = 0;
+  
       for (let entry of stakedPoolEntries) {
-        // console.log(entry)
         //@ts-ignore
-        const asset = await umi.rpc.getAsset(entry?.account?.stakeMint)
+        const asset = await umi.rpc.getAsset(entry?.account?.stakeMint);
         //@ts-ignore
-        const stakeEntry = findStakeEntryId(stakePoolData.poolId, entry?.account?.stakeMint)
-
-        const nftData: any = await program.account.stakeEntry.fetch(stakeEntry.toString())
-        allstakedCnfts.push({data : asset,chainData : nftData})
-        // console.log("asser",asset)
-        let filteredAttr :any;
-        let filteredTeam : any;
-        if(asset?.content?.metadata?.attributes && asset?.content?.metadata?.attributes.length > 0){
-          filteredAttr = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
-          filteredTeam = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
-        }else{
-          await axios.get(asset?.content?.json_uri).then((resp)=>{
-            // console.log(resp.data.attributes)
-          filteredAttr = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
-          filteredTeam = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
-          })
+        const stakeEntry = findStakeEntryId(stakePoolData.poolId, entry?.account?.stakeMint);
+        const nftData: any = await program.account.stakeEntry.fetch(stakeEntry.toString());
+  
+        allstakedCnfts.push({ data: asset, chainData: nftData });
+  
+        let filteredAttr: any;
+        let filteredTeam: any;
+        if (asset?.content?.metadata?.attributes && asset?.content?.metadata?.attributes.length > 0) {
+          filteredAttr = asset?.content?.metadata?.attributes?.filter((item: any) => item?.trait_type === 'Rarity')[0];
+          filteredTeam = asset?.content?.metadata?.attributes?.filter((item: any) => item?.trait_type === 'Team')[0];
+        } else {
+          await axios.get(asset?.content?.json_uri).then((resp) => {
+            filteredAttr = resp?.data?.attributes?.filter((item: any) => item?.trait_type === 'Rarity')[0];
+            filteredTeam = resp?.data?.attributes?.filter((item: any) => item?.trait_type === 'Team')[0];
+          });
         }
-
-      //@ts-ignore
-      let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
-      
-      
-      const date = new Date(nftData.lastStakedAt.toNumber() * 1000);
-
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
-      const day = String(date.getDate()).padStart(2, '0');
-
-      const currentDate = new Date();
-      const currentYear = currentDate.getFullYear();
-      const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
-      const currentDay = String(currentDate.getDate()).padStart(2, '0');
-
-      const startDate = `${year}-${month}-${day}`;
-      const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
-
-      // const demoStartDate = '2023-12-01';
-      // const demoEndDate = '2023-12-30';
-
-      // console.log(startDate, endDate)
-
-// Fetching data from backend cache
-const backendResponse = await axios.get(`/cached-fixtures?season=${season}&team=${filteredTeamId.id}&from=${startDate}&to=${endDate}`);
-const matchesData = backendResponse.data;
-
-// Processing matches data
-            if (matchesData.length > 0) {
-              for(let match of matchesData){
-                if(match.teams.home.winner === null && match.teams.away.winner === null){
-                  if(filteredAttr?.value === 'Gold'){
-                    amountToTransfer += goldWinAmount/2;
-                  }else if(filteredAttr?.value === 'Silver'){
-                    amountToTransfer += silverWinAmount/2;
-                  }else if(filteredAttr?.value === 'Bronze'){
-                    amountToTransfer += bronzeWinAmount/2;
-                  }
-                }else if(match.teams.home.winner === true && match.teams.home.id===filteredTeamId.id){
-                  if(filteredAttr?.value === 'Gold'){
-                    amountToTransfer += goldWinAmount;
-                  }else if(filteredAttr?.value === 'Silver'){
-                    amountToTransfer += silverWinAmount;
-                  }else if(filteredAttr?.value === 'Bronze'){
-                    amountToTransfer += bronzeWinAmount;
-                  }
-                }else if(match.teams.away.winner === true && match.teams.away.id===filteredTeamId.id){
-                  if(filteredAttr?.value === 'Gold'){
-                    amountToTransfer += goldWinAmount;
-                  }else if(filteredAttr?.value === 'Silver'){
-                    amountToTransfer += silverWinAmount;
-                  }else if(filteredAttr?.value === 'Bronze'){
-                    amountToTransfer += bronzeWinAmount;
-                  }
-                }
+  
+        let filteredTeamId = teams.filter((team: any) => team.name === filteredTeam.value)[0];
+  
+        const date = new Date(nftData.lastStakedAt.toNumber() * 1000);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+  
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const currentDay = String(currentDate.getDate()).padStart(2, '0');
+  
+        const startDate = `${year}-${month}-${day}`;
+        const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
+  
+        const backendResponse = await axios.get(`/cached-fixtures?season=${season}&team=${filteredTeamId.id}&from=${startDate}&to=${endDate}`);
+        const matchesData = backendResponse.data;
+  
+        if (matchesData.length > 0) {
+          for (let match of matchesData) {
+            if (match.teams.home.winner === null && match.teams.away.winner === null) {
+              if (filteredAttr?.value === 'Gold') {
+                amountToTransfer += goldWinAmount / 2;
+              } else if (filteredAttr?.value === 'Silver') {
+                amountToTransfer += silverWinAmount / 2;
+              } else if (filteredAttr?.value === 'Bronze') {
+                amountToTransfer += bronzeWinAmount / 2;
               }
-            
-    
-        
-      setClaimableTokens(amountToTransfer)
-
-      setstakedCnfts(allstakedCnfts)
-      setFetchDone(false)
-      setIsLoading(false)
-
+            } else if (match.teams.home.winner === true && match.teams.home.id === filteredTeamId.id) {
+              if (filteredAttr?.value === 'Gold') {
+                amountToTransfer += goldWinAmount;
+              } else if (filteredAttr?.value === 'Silver') {
+                amountToTransfer += silverWinAmount;
+              } else if (filteredAttr?.value === 'Bronze') {
+                amountToTransfer += bronzeWinAmount;
+              }
+            } else if (match.teams.away.winner === true && match.teams.away.id === filteredTeamId.id) {
+              if (filteredAttr?.value === 'Gold') {
+                amountToTransfer += goldWinAmount;
+              } else if (filteredAttr?.value === 'Silver') {
+                amountToTransfer += silverWinAmount;
+              } else if (filteredAttr?.value === 'Bronze') {
+                amountToTransfer += bronzeWinAmount;
+              }
+            }
+          }
+        }
+      }
+  
+      setClaimableTokens(amountToTransfer);
+      setstakedCnfts(allstakedCnfts);
+      setFetchDone(false);
+      setIsLoading(false);
     } catch (e) {
-      console.log(e)
-      setFetchDone(false)
-      setIsLoading(false)
-
+      console.log(e);
+      setFetchDone(false);
+      setIsLoading(false);
     }
-  }
-
+  };
+  
 
   const stakeNfts = async () => {
     try {
