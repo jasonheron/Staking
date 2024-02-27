@@ -142,7 +142,7 @@ const Stake = () => {
             }
       
             // Process matches data as before
-            matchesData.forEach(match => {
+            matchesData.forEach((match: any) => {
               // Calculation logic for `amountToTransfer` based on the matches' outcomes
               // This part of your logic remains unchanged
               if (match.teams.home.winner === null && match.teams.away.winner === null) {
