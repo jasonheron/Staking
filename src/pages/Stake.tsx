@@ -163,7 +163,7 @@ const matchesData = backendResponse.data;
                   }
                 }
               }
-            }
+            
     
         
       setClaimableTokens(amountToTransfer)
