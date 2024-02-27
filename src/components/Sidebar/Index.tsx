@@ -6,7 +6,7 @@ import basketball from "../../assets/images/basketball.png"
 import burger from "../../assets/images/burger.png"
 import dashboard from "../../assets/images/dashboard.png"
 import barchart from "../../assets/images/bar-chart.png"
-import logo from "../../assets/images/logo.png"
+import logo from "../../assets/images/logo.svg"
 
 const Index = () => {
     return (

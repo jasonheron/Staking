@@ -5,7 +5,7 @@ import {
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import "./style.css"
-import logo from "../../assets/images/logo.png"
+import logo from "../../assets/images/logo.svg"
 
 
 const NavBar = () => {
