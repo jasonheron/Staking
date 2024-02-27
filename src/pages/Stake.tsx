@@ -130,16 +130,9 @@ const Stake = () => {
 
       // console.log(startDate, endDate)
 
-
-            // Fetch match data from your server-side cache
-            let matchesData: any;
-            try {
-              const res = await fetch(`/api/matchData?teamId=${filteredTeamId.id}&season=${season}`);
-              matchesData = await res.json();
-            } catch (error) {
-              console.error('Failed to fetch match data:', error);
-              matchesData = []; // Fallback to empty array on error
-            }
+      let matchesData : any;
+      const backendResponse = await axios.get(`/cached-fixtures?season=${season}&team=${filteredTeamId.id}&from=${startDate}&to=${endDate}`);
+      matchesData = backendResponse.data;
       
             if(matchesData.length > 0){
               for(let match of matchesData){
