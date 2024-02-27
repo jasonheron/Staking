@@ -141,37 +141,37 @@ const Stake = () => {
               matchesData = []; // Fallback to empty array on error
             }
       
-            // Process matches data as before
-            matchesData.forEach((match: any) => {
-              // Calculation logic for `amountToTransfer` based on the matches' outcomes
-              // This part of your logic remains unchanged
-              if (match.teams.home.winner === null && match.teams.away.winner === null) {
-                if (filteredAttr?.value === 'Gold') {
-                  amountToTransfer += goldWinAmount / 2;
-                } else if (filteredAttr?.value === 'Silver') {
-                  amountToTransfer += silverWinAmount / 2;
-                } else if (filteredAttr?.value === 'Bronze') {
-                  amountToTransfer += bronzeWinAmount / 2;
-                }
-              } else if (match.teams.home.winner === true && match.teams.home.id === filteredTeamId.id) {
-                if (filteredAttr?.value === 'Gold') {
-                  amountToTransfer += goldWinAmount;
-                } else if (filteredAttr?.value === 'Silver') {
-                  amountToTransfer += silverWinAmount;
-                } else if (filteredAttr?.value === 'Bronze') {
-                  amountToTransfer += bronzeWinAmount;
-                }
-              } else if (match.teams.away.winner === true && match.teams.away.id === filteredTeamId.id) {
-                if (filteredAttr?.value === 'Gold') {
-                  amountToTransfer += goldWinAmount;
-                } else if (filteredAttr?.value === 'Silver') {
-                  amountToTransfer += silverWinAmount;
-                } else if (filteredAttr?.value === 'Bronze') {
-                  amountToTransfer += bronzeWinAmount;
+            if(matchesData.length > 0){
+              for(let match of matchesData){
+                if(match.teams.home.winner === null && match.teams.away.winner === null){
+                  if(filteredAttr?.value === 'Gold'){
+                    amountToTransfer += goldWinAmount/2;
+                  }else if(filteredAttr?.value === 'Silver'){
+                    amountToTransfer += silverWinAmount/2;
+                  }else if(filteredAttr?.value === 'Bronze'){
+                    amountToTransfer += bronzeWinAmount/2;
+                  }
+                }else if(match.teams.home.winner === true && match.teams.home.id===filteredTeamId.id){
+                  if(filteredAttr?.value === 'Gold'){
+                    amountToTransfer += goldWinAmount;
+                  }else if(filteredAttr?.value === 'Silver'){
+                    amountToTransfer += silverWinAmount;
+                  }else if(filteredAttr?.value === 'Bronze'){
+                    amountToTransfer += bronzeWinAmount;
+                  }
+                }else if(match.teams.away.winner === true && match.teams.away.id===filteredTeamId.id){
+                  if(filteredAttr?.value === 'Gold'){
+                    amountToTransfer += goldWinAmount;
+                  }else if(filteredAttr?.value === 'Silver'){
+                    amountToTransfer += silverWinAmount;
+                  }else if(filteredAttr?.value === 'Bronze'){
+                    amountToTransfer += bronzeWinAmount;
+                  }
                 }
               }
-            });
-      }
+            }
+    
+          }
       setClaimableTokens(amountToTransfer)
 
       setstakedCnfts(allstakedCnfts)
