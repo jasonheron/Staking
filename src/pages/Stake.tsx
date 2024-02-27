@@ -135,8 +135,7 @@ const backendResponse = await axios.get(`/cached-fixtures?season=${season}&team=
 const matchesData = backendResponse.data;
 
 // Processing matches data
-if (matchesData.length > 0) {
-  for (let match of matchesData) {
+            if (matchesData.length > 0) {
               for(let match of matchesData){
                 if(match.teams.home.winner === null && match.teams.away.winner === null){
                   if(filteredAttr?.value === 'Gold'){
@@ -166,8 +165,7 @@ if (matchesData.length > 0) {
               }
             }
     
-          
-
+        
       setClaimableTokens(amountToTransfer)
 
       setstakedCnfts(allstakedCnfts)
