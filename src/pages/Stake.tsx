@@ -131,49 +131,46 @@ const Stake = () => {
       // console.log(startDate, endDate)
 
 
-      let matchesData : any;
-      await axios.get(`https://v3.football.api-sports.io/fixtures?season=${season}&team=${filteredTeamId.id}&league=39&from=${startDate}&to=${endDate}`,{
-          headers: {
-            'x-rapidapi-host': 'v3.football.api-sports.io',
-            'X-RapidAPI-Key' : '126ab6d01ffa281853d1ae19f4c70a46'
-          }
-        }).then((res)=>{
-          matchesData = res.data.response;
-        })
-
-        if(matchesData.length > 0){
-          for(let match of matchesData){
-            if(match.teams.home.winner === null && match.teams.away.winner === null){
-              if(filteredAttr?.value === 'Gold'){
-                amountToTransfer += goldWinAmount/2;
-              }else if(filteredAttr?.value === 'Silver'){
-                amountToTransfer += silverWinAmount/2;
-              }else if(filteredAttr?.value === 'Bronze'){
-                amountToTransfer += bronzeWinAmount/2;
-              }
-            }else if(match.teams.home.winner === true && match.teams.home.id===filteredTeamId.id){
-              if(filteredAttr?.value === 'Gold'){
-                amountToTransfer += goldWinAmount;
-              }else if(filteredAttr?.value === 'Silver'){
-                amountToTransfer += silverWinAmount;
-              }else if(filteredAttr?.value === 'Bronze'){
-                amountToTransfer += bronzeWinAmount;
-              }
-            }else if(match.teams.away.winner === true && match.teams.away.id===filteredTeamId.id){
-              if(filteredAttr?.value === 'Gold'){
-                amountToTransfer += goldWinAmount;
-              }else if(filteredAttr?.value === 'Silver'){
-                amountToTransfer += silverWinAmount;
-              }else if(filteredAttr?.value === 'Bronze'){
-                amountToTransfer += bronzeWinAmount;
-              }
+            // Fetch match data from your server-side cache
+            let matchesData: any;
+            try {
+              const res = await fetch(`/api/matchData?teamId=${filteredTeamId.id}&season=${season}`);
+              matchesData = await res.json();
+            } catch (error) {
+              console.error('Failed to fetch match data:', error);
+              matchesData = []; // Fallback to empty array on error
             }
-          }
-        }
-
-
-
-
+      
+            // Process matches data as before
+            matchesData.forEach(match => {
+              // Calculation logic for `amountToTransfer` based on the matches' outcomes
+              // This part of your logic remains unchanged
+              if (match.teams.home.winner === null && match.teams.away.winner === null) {
+                if (filteredAttr?.value === 'Gold') {
+                  amountToTransfer += goldWinAmount / 2;
+                } else if (filteredAttr?.value === 'Silver') {
+                  amountToTransfer += silverWinAmount / 2;
+                } else if (filteredAttr?.value === 'Bronze') {
+                  amountToTransfer += bronzeWinAmount / 2;
+                }
+              } else if (match.teams.home.winner === true && match.teams.home.id === filteredTeamId.id) {
+                if (filteredAttr?.value === 'Gold') {
+                  amountToTransfer += goldWinAmount;
+                } else if (filteredAttr?.value === 'Silver') {
+                  amountToTransfer += silverWinAmount;
+                } else if (filteredAttr?.value === 'Bronze') {
+                  amountToTransfer += bronzeWinAmount;
+                }
+              } else if (match.teams.away.winner === true && match.teams.away.id === filteredTeamId.id) {
+                if (filteredAttr?.value === 'Gold') {
+                  amountToTransfer += goldWinAmount;
+                } else if (filteredAttr?.value === 'Silver') {
+                  amountToTransfer += silverWinAmount;
+                } else if (filteredAttr?.value === 'Bronze') {
+                  amountToTransfer += bronzeWinAmount;
+                }
+              }
+            });
       }
       setClaimableTokens(amountToTransfer)
 
@@ -181,15 +178,13 @@ const Stake = () => {
       setFetchDone(false)
       setIsLoading(false)
 
-
-
     } catch (e) {
       console.log(e)
       setFetchDone(false)
       setIsLoading(false)
 
     }
-  }
+  };
 
 
   const stakeNfts = async () => {
