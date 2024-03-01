@@ -122,7 +122,6 @@ const Stake = () => {
   
         const backendResponse = await axios.get(`/cached-fixtures?season=${season}&team=${filteredTeamId.id}&from=${startDate}&to=${endDate}`);
 console.log(backendResponse.data); // Log the response data to the console
-
 const matchesData = backendResponse.data;
   
         if (matchesData.length > 0) {
