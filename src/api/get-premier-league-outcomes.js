@@ -1,56 +1,37 @@
-// /api/get-premier-league-outcomes.js
 import axios from 'axios';
 
 const teamIds = [33, 34, 35, 36, 40, 42, 44, 45, 46, 47, 48, 49, 50, 51, 52, 55, 62, 63, 65, 66];
 const season = 2023; // Adjust season as needed
+let cachedData = { timestamp: null, outcomes: [] };
 
 const dates = [
-    '09/03/2024',
-    '16/03/2024',
-    '30/03/2024',
-    '02/04/2024',
-    '06/04/2024',
-    '13/04/2024',
-    '20/04/2024',
-    '27/04/2024',
-    '04/05/2024',
-    '11/05/2024',
-    '19/05/2024',
-  ];
-
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-
-  useEffect(() => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = String(today.getMonth() + 1).padStart(2, '0');
-    const currentDay = String(today.getDate()).padStart(2, '0');
-
-    const formattedDates = dates.map(date => {
-      const [day, month, year] = date.split('/');
-      return new Date(`${year}-${month}-${day}`);
-    }).filter(date => date < today);
-
-    const previousDate = formattedDates[formattedDates.length - 1]; // Last date before today
-    if (previousDate) {
-      const year = previousDate.getFullYear();
-      const month = (`0${previousDate.getMonth() + 1}`).slice(-2); // JavaScript months are 0-indexed
-      const day = (`0${previousDate.getDate()}`).slice(-2);
-      const startDate = `${year}-${month}-${day}`;
-    }
-    const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
-
-  }, []);
-
-
+    '2024-03-09',
+    '2024-03-16',
+    '2024-03-30',
+    '2024-04-02',
+    '2024-04-06',
+    '2024-04-13',
+    '2024-04-20',
+    '2024-04-27',
+    '2024-05-04',
+    '2024-05-11',
+    '2024-05-19',
+];
 
 export default async (req, res) => {
+    const now = new Date();
+    if (cachedData.timestamp && (now.getTime() - cachedData.timestamp) < 3600000) { // 1 hour cache validity
+        return res.status(200).json(cachedData.outcomes);
+    }
+
+    const endDate = now.toISOString().split('T')[0];
+    const mostRecentDate = dates.find(date => new Date(date) < now);
+
     let outcomes = [];
 
     try {
         for (const teamId of teamIds) {
-            const response = await axios.get(`https://v3.football.api-sports.io/fixtures?season=${season}&team=${teamId}&league=39&from=${startDate}&to=${endDate}`, {
+            const response = await axios.get(`https://v3.football.api-sports.io/fixtures?season=${season}&team=${teamId}&league=39&from=${mostRecentDate}&to=${endDate}`, {
                 headers: {
                     'X-RapidAPI-Key': '126ab6d01ffa281853d1ae19f4c70a46'
                 }
@@ -58,6 +39,9 @@ export default async (req, res) => {
             outcomes = outcomes.concat(response.data.response);
         }
         
+        // Update cache
+        cachedData = { timestamp: now.getTime(), outcomes };
+
         res.status(200).json(outcomes);
     } catch (error) {
         console.error('Error fetching fixture outcomes:', error);
