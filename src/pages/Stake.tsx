@@ -70,30 +70,21 @@ const Stake = () => {
 
     }
   }
-
   const getStakedCnfts = async () => {
     try {
       if (!publicKey) return
       if (!wallet) return
       if (!stakedPoolEntries) return
       setIsLoading(true)
-      const provider = getProvider(wallet)
-      const program = new anchor.Program(idl as anchor.Idl, idl.metadata.address, provider);
 
       let allstakedCnfts: any[] = []
 
       let amountToTransfer = 0
-
-      for (let entry of stakedPoolEntries) {
-        // console.log(entry)
+        for(let entry of stakedPoolEntries){
         //@ts-ignore
         const asset = await umi.rpc.getAsset(entry?.account?.stakeMint)
         //@ts-ignore
-        const stakeEntry = findStakeEntryId(stakePoolData.poolId, entry?.account?.stakeMint)
-
-        const nftData: any = await program.account.stakeEntry.fetch(stakeEntry.toString())
-        allstakedCnfts.push({data : asset,chainData : nftData})
-        // console.log("asser",asset)
+        allstakedCnfts.push({data : asset,chainData : entry?.account})
         let filteredAttr :any;
         let filteredTeam : any;
         if(asset?.content?.metadata?.attributes && asset?.content?.metadata?.attributes.length > 0){
@@ -101,7 +92,6 @@ const Stake = () => {
           filteredTeam = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
         }else{
           await axios.get(asset?.content?.json_uri).then((resp)=>{
-            // console.log(resp.data.attributes)
           filteredAttr = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
           filteredTeam = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
           })
@@ -109,9 +99,8 @@ const Stake = () => {
 
       //@ts-ignore
       let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
-      
-      
-      const date = new Date(nftData.lastStakedAt.toNumber() * 1000);
+        //@ts-ignore
+      const date = new Date(entry?.account?.lastStakedAt.toNumber() * 1000);
 
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
@@ -129,17 +118,18 @@ const Stake = () => {
       // const demoEndDate = '2023-12-30';
 
       // console.log(startDate, endDate)
-
-
       let matchesData : any;
-      await axios.get(`https://api-football-v1.p.rapidapi.com/v3/fixtures?season=${season}&team=${filteredTeamId.id}&league=39&from=${startDate}&to=${endDate}`,{
+      
+        
+      await axios.get(`https://v3.football.api-sports.io/fixtures?season=${season}&team=${filteredTeamId?.id}&league=39&from=${startDate}&to=${endDate}`,{
           headers: {
-            'X-RapidAPI-Key' : '19978d8ad8msh966959f511c0cedp1fbbacjsnd4ed69eb1e78'
+            'X-RapidAPI-Key' : '126ab6d01ffa281853d1ae19f4c70a46'
           }
         }).then((res)=>{
           matchesData = res.data.response;
+        }).catch((e)=>{
+          console.log(e)
         })
-
         if(matchesData.length > 0){
           for(let match of matchesData){
             if(match.teams.home.winner === null && match.teams.away.winner === null){
@@ -169,10 +159,6 @@ const Stake = () => {
             }
           }
         }
-
-
-
-
       }
       setClaimableTokens(amountToTransfer)
 
@@ -453,9 +439,6 @@ const Stake = () => {
       getStakedCnfts()
     }
   }, [publicKey, stakePoolData, stakedPoolEntries])
-
-  // console.log(cnfts)
-
 
   return (
     <React.Fragment>
