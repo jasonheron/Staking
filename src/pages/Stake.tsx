@@ -78,8 +78,12 @@ const Stake = () => {
       setIsLoading(true)
 
       let allstakedCnfts: any[] = []
-
       let amountToTransfer = 0
+
+       // Fetch Premier League outcomes from the backend once
+      const outcomesResponse = await axios.get('/get-premier-league-outcomes');
+      const outcomes = outcomesResponse.data;
+
         for(let entry of stakedPoolEntries){
         //@ts-ignore
         const asset = await umi.rpc.getAsset(entry?.account?.stakeMint)
@@ -121,15 +125,7 @@ const Stake = () => {
       let matchesData : any;
       
         
-      await axios.get(`https://v3.football.api-sports.io/fixtures?season=${season}&team=${filteredTeamId?.id}&league=39&from=${startDate}&to=${endDate}`,{
-          headers: {
-            'X-RapidAPI-Key' : '126ab6d01ffa281853d1ae19f4c70a46'
-          }
-        }).then((res)=>{
-          matchesData = res.data.response;
-        }).catch((e)=>{
-          console.log(e)
-        })
+      await await axios.get('/get-premier-league-outcomes');
         if(matchesData.length > 0){
           for(let match of matchesData){
             if(match.teams.home.winner === null && match.teams.away.winner === null){
