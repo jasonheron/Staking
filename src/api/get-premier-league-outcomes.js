@@ -37,11 +37,12 @@ const dates = [
       const year = previousDate.getFullYear();
       const month = (`0${previousDate.getMonth() + 1}`).slice(-2); // JavaScript months are 0-indexed
       const day = (`0${previousDate.getDate()}`).slice(-2);
-      setStartDate(`const startDate = \`${year}-${month}-${day}\`;`);
+      const startDate = `${year}-${month}-${day}`;
     }
+    const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
 
-    setEndDate(`const endDate = \`${currentYear}-${currentMonth}-${currentDay}\`;`);
   }, []);
+
 
 
 export default async (req, res) => {
