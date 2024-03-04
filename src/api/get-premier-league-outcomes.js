@@ -24,8 +24,17 @@ export default async (req, res) => {
         return res.status(200).json(cachedData.outcomes);
     }
 
-    const endDate = now.toISOString().split('T')[0];
-    const mostRecentDate = dates.find(date => new Date(date) < now);
+    // Format endDate as YYYY-MM-DD
+const endDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
+// Find the most recent date from the list in the format YYYY-MM-DD
+const mostRecentDate = dates
+    .map(date => {
+        const [day, month, year] = date.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    })
+    .find(date => new Date(date) < now);
+
 
     let outcomes = [];
 
