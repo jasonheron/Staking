@@ -126,6 +126,7 @@ const Stake = () => {
       
         
      await axios.get('https://prem-staking-git-01-hello-parentingtoo.vercel.app/get-premier-league-outcomes');
+
         if(matchesData.length > 0){
           for(let match of matchesData){
             if(match.teams.home.winner === null && match.teams.away.winner === null){
