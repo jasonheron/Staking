@@ -40,7 +40,7 @@ const mostRecentDate = dates
 
     try {
         for (const teamId of teamIds) {
-            const response = await axios.get(`https://v3.football.api-sports.io/fixtures?season=${season}&team=${teamId}&league=39&from=${mostRecentDate}&to=${endDate}`, {
+            const response = await axios.get(`https://v3.football.api-sports.io/fixtures?season=${season}&team=${teamId}&league=39&from=2024-03-01&to=2024-03-04`, {
                 headers: {
                     'X-RapidAPI-Key': '126ab6d01ffa281853d1ae19f4c70a46'
                 }
