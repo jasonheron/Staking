@@ -125,7 +125,7 @@ const Stake = () => {
       let matchesData : any;
       
         
-      await await axios.get('/get-premier-league-outcomes');
+     await axios.get('https://prem-staking-git-01-hello-parentingtoo.vercel.app/get-premier-league-outcomes');
         if(matchesData.length > 0){
           for(let match of matchesData){
             if(match.teams.home.winner === null && match.teams.away.winner === null){
@@ -237,6 +237,7 @@ const Stake = () => {
         if (!wallet) {
       setUnstakeLoading(false)
           return
+
         }
 
         if (unStakeNftList.length <= 0) {
