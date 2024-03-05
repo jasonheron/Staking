@@ -125,7 +125,7 @@ const Stake = () => {
       let matchesData : any;
       
         
-      let response = await axios.get('/api/get-fixtures');
+      let response = await axios.get('src/api/get-fixtures.js');
       let matchesData = response.data; // Adjust this line based on the actual structure of the response
 
           for(let match of matchesData){
