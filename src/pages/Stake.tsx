@@ -17,6 +17,7 @@ import useStakePoolEntries from '../hooks/stakePoolEntries';
 import { Spinner, Row, Col } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import idl from "../types/idl.json"
+import api from "../types/get-results.js"
 import axios from 'axios';
 
 
@@ -97,46 +98,49 @@ const Stake = () => {
           })
         }
 
-        let fixturesData : any;
-
-
         let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
-
-        // Fetch fixtures data from the API
-        await axios.get(`../api/fixtures`,{
+        let matchesData : any;
+      
+        
+      await axios.get(`https://v3.football.api-sports.io/fixtures?league=39&season=2023&round=Regular Season - 27`,{
+          headers: {
+            'X-RapidAPI-Key' : '126ab6d01ffa281853d1ae19f4c70a46'
+          }
         }).then((res)=>{
-          fixturesData = res.data.response;
+          matchesData = res.data.response;
         }).catch((e)=>{
           console.log(e)
         })
-
-        for (let fixture of fixturesData) {
-          if (fixture.teams.home.winner === null && fixture.teams.away.winner === null) {
-            if (filteredAttr?.value === 'Gold') {
-              amountToTransfer += goldWinAmount / 2;
-            } else if (filteredAttr?.value === 'Silver') {
-              amountToTransfer += silverWinAmount / 2;
-            } else if (filteredAttr?.value === 'Bronze') {
-              amountToTransfer += bronzeWinAmount / 2;
-            }
-          } else if (fixture.teams.home.winner === true && fixture.teams.home.id === filteredTeamId.id) {
-            if (filteredAttr?.value === 'Gold') {
-              amountToTransfer += goldWinAmount;
-            } else if (filteredAttr?.value === 'Silver') {
-              amountToTransfer += silverWinAmount;
-            } else if (filteredAttr?.value === 'Bronze') {
-              amountToTransfer += bronzeWinAmount;
-            }
-          } else if (fixture.teams.away.winner === true && fixture.teams.away.id === filteredTeamId.id) {
-            if (filteredAttr?.value === 'Gold') {
-              amountToTransfer += goldWinAmount;
-            } else if (filteredAttr?.value === 'Silver') {
-              amountToTransfer += silverWinAmount;
-            } else if (filteredAttr?.value === 'Bronze') {
-              amountToTransfer += bronzeWinAmount;
+        if(matchesData.length > 0){
+          for(let match of matchesData){
+            if(match.teams.home.winner === null && match.teams.away.winner === null){
+              if(filteredAttr?.value === 'Gold'){
+                amountToTransfer += goldWinAmount/2;
+              }else if(filteredAttr?.value === 'Silver'){
+                amountToTransfer += silverWinAmount/2;
+              }else if(filteredAttr?.value === 'Bronze'){
+                amountToTransfer += bronzeWinAmount/2;
+              }
+            }else if(match.teams.home.winner === true && match.teams.home.id===filteredTeamId.id){
+              if(filteredAttr?.value === 'Gold'){
+                amountToTransfer += goldWinAmount;
+              }else if(filteredAttr?.value === 'Silver'){
+                amountToTransfer += silverWinAmount;
+              }else if(filteredAttr?.value === 'Bronze'){
+                amountToTransfer += bronzeWinAmount;
+              }
+            }else if(match.teams.away.winner === true && match.teams.away.id===filteredTeamId.id){
+              if(filteredAttr?.value === 'Gold'){
+                amountToTransfer += goldWinAmount;
+              }else if(filteredAttr?.value === 'Silver'){
+                amountToTransfer += silverWinAmount;
+              }else if(filteredAttr?.value === 'Bronze'){
+                amountToTransfer += bronzeWinAmount;
+              }
             }
           }
         }
+      }
 
         console.log('Amount to transfer:', amountToTransfer);
       }
