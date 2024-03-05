@@ -121,9 +121,7 @@ const Stake = () => {
       // const demoStartDate = '2023-12-01';
       // const demoEndDate = '2023-12-30';
 
-      // console.log(startDate, endDate)
-      let matchesData : any;
-      
+      // console.log(startDate, endDate)      
         
       let response = await axios.get('src/api/get-fixtures.js');
       let matchesData = response.data; // Adjust this line based on the actual structure of the response
