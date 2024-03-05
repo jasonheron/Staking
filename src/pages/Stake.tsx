@@ -97,39 +97,14 @@ const Stake = () => {
           })
         }
 
-      //@ts-ignore
-      let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
-        //@ts-ignore
-       // const date = new Date(entry?.account?.lastStakedAt.toNumber() * 1000);
+        const filteredTeamId = teams.find(team => team.name === filteredTeam.value);
 
-       // const year = date.getFullYear();
-       // const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
-       // const day = String(date.getDate()).padStart(2, '0');
+        // Fetch fixtures data from the API
+        const fixturesResponse = await axios.get('api/fixtures');
+        const fixturesData = fixturesResponse.data.response;
 
-       // const currentDate = new Date();
-       // const currentYear = currentDate.getFullYear();
-       // const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
-       // const currentDay = String(currentDate.getDate()).padStart(2, '0');
-
-       // const startDate = `${year}-${month}-${day}`;
-       // const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
-
-      // const demoStartDate = '2023-12-01';
-      // const demoEndDate = '2023-12-30';
-
-      // console.log(startDate, endDate)      
-        
-      try {
-        const response = await axios.get('../api/get-fixtures.js');
-        const fixturesData = response.data.response;
-    
-        let amountToTransfer = 0; // Initialize amountToTransfer
-    
         for (let fixture of fixturesData) {
-          if (
-            fixture.teams.home.winner === null &&
-            fixture.teams.away.winner === null
-          ) {
+          if (fixture.teams.home.winner === null && fixture.teams.away.winner === null) {
             if (filteredAttr?.value === 'Gold') {
               amountToTransfer += goldWinAmount / 2;
             } else if (filteredAttr?.value === 'Silver') {
@@ -137,10 +112,7 @@ const Stake = () => {
             } else if (filteredAttr?.value === 'Bronze') {
               amountToTransfer += bronzeWinAmount / 2;
             }
-          } else if (
-            fixture.teams.home.winner === true &&
-            fixture.teams.home.id === filteredTeamId.id
-          ) {
+          } else if (fixture.teams.home.winner === true && fixture.teams.home.id === filteredTeamId.id) {
             if (filteredAttr?.value === 'Gold') {
               amountToTransfer += goldWinAmount;
             } else if (filteredAttr?.value === 'Silver') {
@@ -148,10 +120,7 @@ const Stake = () => {
             } else if (filteredAttr?.value === 'Bronze') {
               amountToTransfer += bronzeWinAmount;
             }
-          } else if (
-            fixture.teams.away.winner === true &&
-            fixture.teams.away.id === filteredTeamId.id
-          ) {
+          } else if (fixture.teams.away.winner === true && fixture.teams.away.id === filteredTeamId.id) {
             if (filteredAttr?.value === 'Gold') {
               amountToTransfer += goldWinAmount;
             } else if (filteredAttr?.value === 'Silver') {
@@ -161,12 +130,9 @@ const Stake = () => {
             }
           }
         }
-    
-        console.log('Amount to transfer:', amountToTransfer); // Output the final amount to transfer
-      } catch (error) {
-        console.error('Error fetching fixtures data:', error);
+
+        console.log('Amount to transfer:', amountToTransfer);
       }
-    };
       setClaimableTokens(amountToTransfer)
 
       setstakedCnfts(allstakedCnfts)
