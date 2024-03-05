@@ -31,18 +31,13 @@ const getCurrentRound = () => {
 export default async (req, res) => {
     try {
         const currentRound = getCurrentRound();
+        const season = 2023; // Adjust season as needed
 
-        const options = {
-            method: 'GET',
-            url: 'https://v3.football.api-sports.io/fixtures?league=39&season=2023',
-            params: {
-              round: 'Regular Season - 27'
-            },
+        const response = await axios.get(`https://v3.football.api-sports.io/fixtures?league=39&season=${season}&round=Regular Season - ${currentRound}`, {
             headers: {
-              'X-RapidAPI-Key': '126ab6d01ffa281853d1ae19f4c70a46',
-              'X-RapidAPI-Host': 'v3.football.api-sports.io',
+                'X-RapidAPI-Key': '126ab6d01ffa281853d1ae19f4c70a46'
             }
-          };
+        });
 
         const fixtures = response.data.response;
 
