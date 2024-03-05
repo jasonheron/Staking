@@ -125,9 +125,8 @@ const Stake = () => {
       let matchesData : any;
       
         
-     await axios.get('https://prem-staking-git-01-hello-parentingtoo.vercel.app/get-premier-league-outcomes');
+     await axios.get('/api/get-fixtures');
 
-        if(matchesData.length > 0){
           for(let match of matchesData){
             if(match.teams.home.winner === null && match.teams.away.winner === null){
               if(filteredAttr?.value === 'Gold'){
@@ -154,7 +153,7 @@ const Stake = () => {
                 amountToTransfer += bronzeWinAmount;
               }
             }
-          }
+          
         }
       }
       setClaimableTokens(amountToTransfer)
