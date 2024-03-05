@@ -126,8 +126,8 @@ const Stake = () => {
       let response = await axios.get('src/api/get-fixtures.js');
     let matchesData = response.data.response; // Adjusted to access the `response` property of the data
 
-    for (let match of matchesData) {
-      if (match.teams.home.winner === null && match.teams.away.winner === null) {
+    for (let fixture of matchesData) {
+      if (fixture.teams.home.winner === null && fixture.teams.away.winner === null) {
         if (filteredAttr?.value === 'Gold') {
           amountToTransfer += goldWinAmount / 2;
         } else if (filteredAttr?.value === 'Silver') {
@@ -135,7 +135,7 @@ const Stake = () => {
         } else if (filteredAttr?.value === 'Bronze') {
           amountToTransfer += bronzeWinAmount / 2;
         }
-      } else if (match.teams.home.winner === true && match.teams.home.id === filteredTeamId.id) {
+      } else if (fixture.teams.home.winner === true && fixture.teams.home.id === filteredTeamId.id) {
         if (filteredAttr?.value === 'Gold') {
           amountToTransfer += goldWinAmount;
         } else if (filteredAttr?.value === 'Silver') {
@@ -143,7 +143,7 @@ const Stake = () => {
         } else if (filteredAttr?.value === 'Bronze') {
           amountToTransfer += bronzeWinAmount;
         }
-      } else if (match.teams.away.winner === true && match.teams.away.id === filteredTeamId.id) {
+      } else if (fixture.teams.away.winner === true && fixture.teams.away.id === filteredTeamId.id) {
         if (filteredAttr?.value === 'Gold') {
           amountToTransfer += goldWinAmount;
         } else if (filteredAttr?.value === 'Silver') {
