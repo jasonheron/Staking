@@ -78,8 +78,8 @@ const Stake = () => {
       setIsLoading(true)
 
       let allstakedCnfts: any[] = []
-      let amountToTransfer = 0
 
+      let amountToTransfer = 0
         for(let entry of stakedPoolEntries){
         //@ts-ignore
         const asset = await umi.rpc.getAsset(entry?.account?.stakeMint)
@@ -100,73 +100,66 @@ const Stake = () => {
       //@ts-ignore
       let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
         //@ts-ignore
-       // const date = new Date(entry?.account?.lastStakedAt.toNumber() * 1000);
+      const date = new Date(entry?.account?.lastStakedAt.toNumber() * 1000);
 
-       // const year = date.getFullYear();
-       // const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
-       // const day = String(date.getDate()).padStart(2, '0');
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
+      const day = String(date.getDate()).padStart(2, '0');
 
-       // const currentDate = new Date();
-       // const currentYear = currentDate.getFullYear();
-       // const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
-       // const currentDay = String(currentDate.getDate()).padStart(2, '0');
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
+      const currentDay = String(currentDate.getDate()).padStart(2, '0');
 
-       // const startDate = `${year}-${month}-${day}`;
-       // const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
+      const startDate = `${year}-${month}-${day}`;
+      const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
 
       // const demoStartDate = '2023-12-01';
       // const demoEndDate = '2023-12-30';
 
-      // console.log(startDate, endDate)      
+      // console.log(startDate, endDate)
+      let matchesData : any;
+      
         
-      try {
-        const response = await axios.get('../api/get-fixtures.js');
-        const fixturesData = response.data.response;
-    
-        let amountToTransfer = 0; // Initialize amountToTransfer
-    
-        for (let fixture of fixturesData) {
-          if (
-            fixture.teams.home.winner === null &&
-            fixture.teams.away.winner === null
-          ) {
-            if (filteredAttr?.value === 'Gold') {
-              amountToTransfer += goldWinAmount / 2;
-            } else if (filteredAttr?.value === 'Silver') {
-              amountToTransfer += silverWinAmount / 2;
-            } else if (filteredAttr?.value === 'Bronze') {
-              amountToTransfer += bronzeWinAmount / 2;
-            }
-          } else if (
-            fixture.teams.home.winner === true &&
-            fixture.teams.home.id === filteredTeamId.id
-          ) {
-            if (filteredAttr?.value === 'Gold') {
-              amountToTransfer += goldWinAmount;
-            } else if (filteredAttr?.value === 'Silver') {
-              amountToTransfer += silverWinAmount;
-            } else if (filteredAttr?.value === 'Bronze') {
-              amountToTransfer += bronzeWinAmount;
-            }
-          } else if (
-            fixture.teams.away.winner === true &&
-            fixture.teams.away.id === filteredTeamId.id
-          ) {
-            if (filteredAttr?.value === 'Gold') {
-              amountToTransfer += goldWinAmount;
-            } else if (filteredAttr?.value === 'Silver') {
-              amountToTransfer += silverWinAmount;
-            } else if (filteredAttr?.value === 'Bronze') {
-              amountToTransfer += bronzeWinAmount;
+      await axios.get(`https://v3.football.api-sports.io/fixtures?league=39&season=${season}&round=Regular Season - ${currentRound}`,{
+          headers: {
+            'X-RapidAPI-Key' : '126ab6d01ffa281853d1ae19f4c70a46'
+          }
+        }).then((res)=>{
+          matchesData = res.data.response;
+        }).catch((e)=>{
+          console.log(e)
+        })
+        if(matchesData.length > 0){
+          for(let match of matchesData){
+            if(match.teams.home.winner === null && match.teams.away.winner === null){
+              if(filteredAttr?.value === 'Gold'){
+                amountToTransfer += goldWinAmount/2;
+              }else if(filteredAttr?.value === 'Silver'){
+                amountToTransfer += silverWinAmount/2;
+              }else if(filteredAttr?.value === 'Bronze'){
+                amountToTransfer += bronzeWinAmount/2;
+              }
+            }else if(match.teams.home.winner === true && match.teams.home.id===filteredTeamId.id){
+              if(filteredAttr?.value === 'Gold'){
+                amountToTransfer += goldWinAmount;
+              }else if(filteredAttr?.value === 'Silver'){
+                amountToTransfer += silverWinAmount;
+              }else if(filteredAttr?.value === 'Bronze'){
+                amountToTransfer += bronzeWinAmount;
+              }
+            }else if(match.teams.away.winner === true && match.teams.away.id===filteredTeamId.id){
+              if(filteredAttr?.value === 'Gold'){
+                amountToTransfer += goldWinAmount;
+              }else if(filteredAttr?.value === 'Silver'){
+                amountToTransfer += silverWinAmount;
+              }else if(filteredAttr?.value === 'Bronze'){
+                amountToTransfer += bronzeWinAmount;
+              }
             }
           }
         }
-    
-        console.log('Amount to transfer:', amountToTransfer); // Output the final amount to transfer
-      } catch (error) {
-        console.error('Error fetching fixtures data:', error);
       }
-    };
       setClaimableTokens(amountToTransfer)
 
       setstakedCnfts(allstakedCnfts)
@@ -248,7 +241,6 @@ const Stake = () => {
         if (!wallet) {
       setUnstakeLoading(false)
           return
-
         }
 
         if (unStakeNftList.length <= 0) {
