@@ -139,7 +139,7 @@ const Stake = () => {
             }
         }
     
-        return 1; // Return 1 if no round is found (should not happen)
+        return 27; // Return 1 if no round is found (should not happen)
     };
     const currentRound = getCurrentRound();
 
