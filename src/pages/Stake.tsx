@@ -124,9 +124,9 @@ const Stake = () => {
       // console.log(startDate, endDate)      
         
       let response = await axios.get('src/api/get-fixtures.js');
-    let matchesData = response.data.response; // Adjusted to access the `response` property of the data
+    let fixturesData = response.data.response; // Adjusted to access the `response` property of the data
 
-    for (let fixture of matchesData) {
+    for (let fixture of fixturesData) {
       if (fixture.teams.home.winner === null && fixture.teams.away.winner === null) {
         if (filteredAttr?.value === 'Gold') {
           amountToTransfer += goldWinAmount / 2;
