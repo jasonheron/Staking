@@ -141,14 +141,10 @@ const Stake = () => {
     
         return 1; // Return 1 if no round is found (should not happen)
     };
+    const currentRound = getCurrentRound();
 
-      // const demoStartDate = '2023-12-01';
-      // const demoEndDate = '2023-12-30';
-
-      // console.log(startDate, endDate)
-      let matchesData : any;
+    let matchesData : any;
       
-        
       await axios.get(`https://v3.football.api-sports.io/fixtures?league=39&season=${season}&round=Regular%20Season%20-%20${currentRound}`,{
           headers: {
             'X-RapidAPI-Key' : '126ab6d01ffa281853d1ae19f4c70a46'
@@ -203,7 +199,6 @@ const Stake = () => {
 
     }
   }
-
 
   const stakeNfts = async () => {
     try {
