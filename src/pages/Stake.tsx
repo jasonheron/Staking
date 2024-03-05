@@ -97,7 +97,7 @@ const Stake = () => {
           })
         }
 
-        const filteredTeamId = teams.find(team => team.name === filteredTeam.value);
+        let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
 
         // Fetch fixtures data from the API
         const fixturesResponse = await axios.get('api/fixtures');
