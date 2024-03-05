@@ -104,19 +104,19 @@ const Stake = () => {
       //@ts-ignore
       let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
         //@ts-ignore
-      const date = new Date(entry?.account?.lastStakedAt.toNumber() * 1000);
+       // const date = new Date(entry?.account?.lastStakedAt.toNumber() * 1000);
 
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
-      const day = String(date.getDate()).padStart(2, '0');
+       // const year = date.getFullYear();
+       // const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
+       // const day = String(date.getDate()).padStart(2, '0');
 
-      const currentDate = new Date();
-      const currentYear = currentDate.getFullYear();
-      const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
-      const currentDay = String(currentDate.getDate()).padStart(2, '0');
+       // const currentDate = new Date();
+       // const currentYear = currentDate.getFullYear();
+       // const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
+       // const currentDay = String(currentDate.getDate()).padStart(2, '0');
 
-      const startDate = `${year}-${month}-${day}`;
-      const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
+       // const startDate = `${year}-${month}-${day}`;
+       // const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
 
       // const demoStartDate = '2023-12-01';
       // const demoEndDate = '2023-12-30';
@@ -125,7 +125,8 @@ const Stake = () => {
       let matchesData : any;
       
         
-     await axios.get('/api/get-fixtures');
+      let response = await axios.get('/api/get-fixtures');
+      let matchesData = response.data; // Adjust this line based on the actual structure of the response
 
           for(let match of matchesData){
             if(match.teams.home.winner === null && match.teams.away.winner === null){
