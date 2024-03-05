@@ -97,6 +97,9 @@ const Stake = () => {
           })
         }
 
+        let fixturesData : any;
+
+
         let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
 
         // Fetch fixtures data from the API
