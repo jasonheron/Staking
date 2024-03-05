@@ -33,7 +33,9 @@ export default async (req, res) => {
         const currentRound = getCurrentRound();
         const season = 2023; // Adjust season as needed
 
-        const response = await axios.get(`https://v3.football.api-sports.io/fixtures?league=39&season=${season}&round=Regular Season - ${currentRound}`, {
+       
+        const response = await axios.get(`https://v3.football.api-sports.io/fixtures?league=39&season=2023&round=Regular Season - 27`, {
+        // const response = await axios.get(`https://v3.football.api-sports.io/fixtures?league=39&season=${season}&round=Regular Season - ${currentRound}`, {
             headers: {
                 'X-RapidAPI-Key': '126ab6d01ffa281853d1ae19f4c70a46'
             }
