@@ -80,10 +80,6 @@ const Stake = () => {
       let allstakedCnfts: any[] = []
       let amountToTransfer = 0
 
-       // Fetch Premier League outcomes from the backend once
-      const outcomesResponse = await axios.get('/get-premier-league-outcomes');
-      const outcomes = outcomesResponse.data;
-
         for(let entry of stakedPoolEntries){
         //@ts-ignore
         const asset = await umi.rpc.getAsset(entry?.account?.stakeMint)
@@ -123,37 +119,54 @@ const Stake = () => {
 
       // console.log(startDate, endDate)      
         
-      let response = await axios.get('src/api/get-fixtures.js');
-    let fixturesData = response.data.response; // Adjusted to access the `response` property of the data
-
-    for (let fixture of fixturesData) {
-      if (fixture.teams.home.winner === null && fixture.teams.away.winner === null) {
-        if (filteredAttr?.value === 'Gold') {
-          amountToTransfer += goldWinAmount / 2;
-        } else if (filteredAttr?.value === 'Silver') {
-          amountToTransfer += silverWinAmount / 2;
-        } else if (filteredAttr?.value === 'Bronze') {
-          amountToTransfer += bronzeWinAmount / 2;
+      try {
+        const response = await axios.get('../api/get-fixtures.js');
+        const fixturesData = response.data.response;
+    
+        let amountToTransfer = 0; // Initialize amountToTransfer
+    
+        for (let fixture of fixturesData) {
+          if (
+            fixture.teams.home.winner === null &&
+            fixture.teams.away.winner === null
+          ) {
+            if (filteredAttr?.value === 'Gold') {
+              amountToTransfer += goldWinAmount / 2;
+            } else if (filteredAttr?.value === 'Silver') {
+              amountToTransfer += silverWinAmount / 2;
+            } else if (filteredAttr?.value === 'Bronze') {
+              amountToTransfer += bronzeWinAmount / 2;
+            }
+          } else if (
+            fixture.teams.home.winner === true &&
+            fixture.teams.home.id === filteredTeamId.id
+          ) {
+            if (filteredAttr?.value === 'Gold') {
+              amountToTransfer += goldWinAmount;
+            } else if (filteredAttr?.value === 'Silver') {
+              amountToTransfer += silverWinAmount;
+            } else if (filteredAttr?.value === 'Bronze') {
+              amountToTransfer += bronzeWinAmount;
+            }
+          } else if (
+            fixture.teams.away.winner === true &&
+            fixture.teams.away.id === filteredTeamId.id
+          ) {
+            if (filteredAttr?.value === 'Gold') {
+              amountToTransfer += goldWinAmount;
+            } else if (filteredAttr?.value === 'Silver') {
+              amountToTransfer += silverWinAmount;
+            } else if (filteredAttr?.value === 'Bronze') {
+              amountToTransfer += bronzeWinAmount;
+            }
+          }
         }
-      } else if (fixture.teams.home.winner === true && fixture.teams.home.id === filteredTeamId.id) {
-        if (filteredAttr?.value === 'Gold') {
-          amountToTransfer += goldWinAmount;
-        } else if (filteredAttr?.value === 'Silver') {
-          amountToTransfer += silverWinAmount;
-        } else if (filteredAttr?.value === 'Bronze') {
-          amountToTransfer += bronzeWinAmount;
-        }
-      } else if (fixture.teams.away.winner === true && fixture.teams.away.id === filteredTeamId.id) {
-        if (filteredAttr?.value === 'Gold') {
-          amountToTransfer += goldWinAmount;
-        } else if (filteredAttr?.value === 'Silver') {
-          amountToTransfer += silverWinAmount;
-        } else if (filteredAttr?.value === 'Bronze') {
-          amountToTransfer += bronzeWinAmount;
-        }
+    
+        console.log('Amount to transfer:', amountToTransfer); // Output the final amount to transfer
+      } catch (error) {
+        console.error('Error fetching fixtures data:', error);
       }
-    }
-  } 
+    };
       setClaimableTokens(amountToTransfer)
 
       setstakedCnfts(allstakedCnfts)
