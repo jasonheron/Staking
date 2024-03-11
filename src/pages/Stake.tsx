@@ -81,8 +81,8 @@ const Stake = () => {
 
       let amountToTransfer = 0
       
-      for(let entry of stakedPoolEntries){
-        //@ts-ignore
+      for (let entry of stakedPoolEntries) {
+        try {
         const asset = await umi.rpc.getAsset(entry?.account?.stakeMint)
         //@ts-ignore
         allstakedCnfts.push({data : asset,chainData : entry?.account})
