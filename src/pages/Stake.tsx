@@ -63,12 +63,6 @@ const Stake = () => {
       setFetchDone(false)
       setIsLoading(false)
 
-    } catch (e) {
-      console.log(e)
-      setFetchDone(false)
-      setIsLoading(false)
-
-    }
   }
   const getStakedCnfts = async () => {
     try {
