@@ -64,44 +64,49 @@ const Stake = () => {
       setIsLoading(false)
 
   }
-  async function getStakedCnfts() {
+  const getStakedCnfts = async () => {
     try {
-        if (!publicKey || !wallet || !stakedPoolEntries) return;
+      if (!publicKey) return
+      if (!wallet) return
+      if (!stakedPoolEntries) return
+      setIsLoading(true)
 
-        setIsLoading(true);
-        let allstakedCnfts = [];
-        let amountToTransfer = 0;
+      let allstakedCnfts: any[] = []
 
-        for (let entry of stakedPoolEntries) {
-            try {
-                const asset = await umi.rpc.getAsset(entry?.account?.stakeMint);
-                allstakedCnfts.push({ data: asset, chainData: entry?.account });
+      let amountToTransfer = 0
+        for(let entry of stakedPoolEntries){
+        //@ts-ignore
+        const asset = await umi.rpc.getAsset(entry?.account?.stakeMint)
+        //@ts-ignore
+        allstakedCnfts.push({data : asset,chainData : entry?.account})
+        let filteredAttr :any;
+        let filteredTeam : any;
+        if(asset?.content?.metadata?.attributes && asset?.content?.metadata?.attributes.length > 0){
+          filteredAttr = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
+          filteredTeam = asset?.content?.metadata?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+        }else{
+          await axios.get(asset?.content?.json_uri).then((resp)=>{
+          filteredAttr = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Rarity')[0];
+          filteredTeam = resp?.data?.attributes?.filter((item:any)=> item?.trait_type === 'Team')[0];
+          })
+        }
 
-                let filteredAttr, filteredTeam;
+      //@ts-ignore
+      let filteredTeamId = teams.filter((team:any)=>team.name===filteredTeam.value)[0];
+        //@ts-ignore
+      const date = new Date(entry?.account?.lastStakedAt.toNumber() * 1000);
 
-                if (asset?.content?.metadata?.attributes && asset?.content?.metadata?.attributes.length > 0) {
-                    filteredAttr = asset?.content?.metadata?.attributes?.find(item => item?.trait_type === 'Rarity');
-                    filteredTeam = asset?.content?.metadata?.attributes?.find(item => item?.trait_type === 'Team');
-                } else {
-                    const resp = await axios.get(asset?.content?.json_uri);
-                    filteredAttr = resp?.data?.attributes?.find(item => item?.trait_type === 'Rarity');
-                    filteredTeam = resp?.data?.attributes?.find(item => item?.trait_type === 'Team');
-                }
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
+      const day = String(date.getDate()).padStart(2, '0');
 
-                const filteredTeamId = teams.find(team => team.name === filteredTeam.value);
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1 and pad with zero
+      const currentDay = String(currentDate.getDate()).padStart(2, '0');
 
-                const date = new Date(entry?.account?.lastStakedAt.toNumber() * 1000);
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-
-                const currentDate = new Date();
-                const currentYear = currentDate.getFullYear();
-                const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
-                const currentDay = String(currentDate.getDate()).padStart(2, '0');
-
-                const startDate = `${year}-${month}-${day}`;
-                const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
+      const startDate = `${year}-${month}-${day}`;
+      const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
 
                 const response = await axios.get(`https://script.googleusercontent.com/macros/echo?user_content_key=HuCJj36nmZZwS0rhx5Cu-zZJIyVQzXQgLuojvRp32DqrbNI22tDiwfKfttMtZB-NbzXz6v6tWWEfuhuD5eE8QfI2Txbe0Vv9OJmA1Yb3SEsKFZqtv3DaNYcMrmhZHmUMWojr9NvTBuBLhyHCd5hHa03NbMS9aSRNUPwK0Np3BqRXLhRFk7AldsS11GBEDP0-B9YMIoI6rbQ16o68jY_zLaMCeyk36k5J_b14cYIOPOcFhO7tjhWMt83BI-dLAEELnRA9CKwOBnXMVAqI2ezS_w&lib=Mg0dS74DM6YtoXsJGIFHvs7ee_uHNINZP`);
                 const matchesData = response.data;
