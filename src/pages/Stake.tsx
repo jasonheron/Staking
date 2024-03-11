@@ -48,7 +48,7 @@ const Stake = () => {
   umi.use(dasApi())
 
   const getCnfts = async () => {
-    try {
+ 
       if (!publicKey) return
       setIsLoading(true)
       //@ts-ignore
@@ -152,7 +152,7 @@ const Stake = () => {
         setFetchDone(false);
         setIsLoading(false);
     } 
-}
+
 
 
   const stakeNfts = async () => {
