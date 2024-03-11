@@ -82,7 +82,6 @@ const Stake = () => {
       let amountToTransfer = 0
       
       for (let entry of stakedPoolEntries) {
-        try {
         const asset = await umi.rpc.getAsset(entry?.account?.stakeMint)
         //@ts-ignore
         allstakedCnfts.push({data : asset,chainData : entry?.account})
@@ -144,8 +143,7 @@ const Stake = () => {
                         }
                     }
                 }
-            } catch (error) {
-                console.log(error);
+           
             }
         }
 
@@ -153,11 +151,7 @@ const Stake = () => {
         setstakedCnfts(allstakedCnfts);
         setFetchDone(false);
         setIsLoading(false);
-    } catch (error) {
-        console.log(error);
-        setFetchDone(false);
-        setIsLoading(false);
-    }
+    } 
 }
 
 
