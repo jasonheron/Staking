@@ -80,7 +80,8 @@ const Stake = () => {
       let allstakedCnfts: any[] = []
 
       let amountToTransfer = 0
-        for(let entry of stakedPoolEntries){
+      
+      for(let entry of stakedPoolEntries){
         //@ts-ignore
         const asset = await umi.rpc.getAsset(entry?.account?.stakeMint)
         //@ts-ignore
@@ -114,91 +115,51 @@ const Stake = () => {
       const startDate = `${year}-${month}-${day}`;
       const endDate = `${currentYear}-${currentMonth}-${currentDay}`;
 
-      const getCurrentRound = () => {
-        const currentDate = new Date(); // Current date
-        const schedule = [
-            { date: '2024-03-02', round: 27 },
-            { date: '2024-03-09', round: 28 },
-            { date: '2024-03-16', round: 29 },
-            { date: '2024-03-30', round: 30 },
-            { date: '2024-04-02', round: 31 },
-            { date: '2024-04-06', round: 32 },
-            { date: '2024-04-13', round: 33 },
-            { date: '2024-04-20', round: 34 },
-            { date: '2024-04-27', round: 35 },
-            { date: '2024-05-04', round: 36 },
-            { date: '2024-05-11', round: 37 },
-            { date: '2024-05-19', round: 38 }
-        ];
-    
-        // Find the latest round whose date is less than or equal to the current date
-        for (let i = schedule.length - 1; i >= 0; i--) {
-            const roundDate = new Date(schedule[i].date);
-            if (currentDate >= roundDate) {
-                return schedule[i].round;
+      // const demoStartDate = '2023-12-01';
+      // const demoEndDate = '2023-12-30';
+
+      // console.log(startDate, endDate)
+      const matchesData = response.data;
+
+                if (matchesData.length > 0) {
+                    for (let match of matchesData) {
+                        if (match.Result === "Draw") {
+                            if (filteredAttr?.value === 'Gold') {
+                                amountToTransfer += goldWinAmount / 2;
+                            } else if (filteredAttr?.value === 'Silver') {
+                                amountToTransfer += silverWinAmount / 2;
+                            } else if (filteredAttr?.value === 'Bronze') {
+                                amountToTransfer += bronzeWinAmount / 2;
+                            }
+                        } else if (match.Result === "Win" && match["Team Name"] === filteredTeamId) {
+                            if (filteredAttr?.value === 'Gold') {
+                                amountToTransfer += goldWinAmount;
+                            } else if (filteredAttr?.value === 'Silver') {
+                                amountToTransfer += silverWinAmount;
+                            } else if (filteredAttr?.value === 'Bronze') {
+                                amountToTransfer += bronzeWinAmount;
+                            }
+                        } else if (match.Result === "Loss" && match["Team Name"] === filteredTeamId) {
+                            // You can handle loss scenarios here if needed
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log(error);
             }
         }
-    
-        return 27; // Return 1 if no round is found (should not happen)
-    };
-    const currentRound = getCurrentRound();
 
-    let matchesData : any;
-      
-      await axios.get(`https://v3.football.api-sports.io/fixtures?league=39&season=${season}&round=Regular%20Season%20-%20${currentRound}`,{
-          headers: {
-            'X-RapidAPI-Key' : '126ab6d01ffa281853d1ae19f4c70a46'
-          }
-        }).then((res)=>{
-          matchesData = res.data.response;
-        }).catch((e)=>{
-          console.log(e)
-        })
-        if(matchesData.length > 0){
-          for(let match of matchesData){
-            if(match.teams.home.winner === null && match.teams.away.winner === null){
-              if(filteredAttr?.value === 'Gold'){
-                amountToTransfer += goldWinAmount/2;
-              }else if(filteredAttr?.value === 'Silver'){
-                amountToTransfer += silverWinAmount/2;
-              }else if(filteredAttr?.value === 'Bronze'){
-                amountToTransfer += bronzeWinAmount/2;
-              }
-            }else if(match.teams.home.winner === true && match.teams.home.id===filteredTeamId.id){
-              if(filteredAttr?.value === 'Gold'){
-                amountToTransfer += goldWinAmount;
-              }else if(filteredAttr?.value === 'Silver'){
-                amountToTransfer += silverWinAmount;
-              }else if(filteredAttr?.value === 'Bronze'){
-                amountToTransfer += bronzeWinAmount;
-              }
-            }else if(match.teams.away.winner === true && match.teams.away.id===filteredTeamId.id){
-              if(filteredAttr?.value === 'Gold'){
-                amountToTransfer += goldWinAmount;
-              }else if(filteredAttr?.value === 'Silver'){
-                amountToTransfer += silverWinAmount;
-              }else if(filteredAttr?.value === 'Bronze'){
-                amountToTransfer += bronzeWinAmount;
-              }
-            }
-          }
-        }
-      }
-      setClaimableTokens(amountToTransfer)
-
-      setstakedCnfts(allstakedCnfts)
-      setFetchDone(false)
-      setIsLoading(false)
-
-
-
-    } catch (e) {
-      console.log(e)
-      setFetchDone(false)
-      setIsLoading(false)
-
+        setClaimableTokens(amountToTransfer);
+        setstakedCnfts(allstakedCnfts);
+        setFetchDone(false);
+        setIsLoading(false);
+    } catch (error) {
+        console.log(error);
+        setFetchDone(false);
+        setIsLoading(false);
     }
-  }
+}
+
 
   const stakeNfts = async () => {
     try {
