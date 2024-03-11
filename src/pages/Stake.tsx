@@ -134,6 +134,8 @@ const Stake = () => {
                         }
                     }
                 }
+            } catch (error) {
+                console.log(error);
             }
         }
 
