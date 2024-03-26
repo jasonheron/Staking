@@ -52,7 +52,7 @@ const Stake = () => {
       if (!publicKey) return
       setIsLoading(true)
       //@ts-ignore
-      const rpcAssetList = await umi.rpc.getAssetsByOwner({ owner: publicKey })
+      const rpcAssetList = await umi.rpc.getAssetsByOwner({ ownerAddress: publicKey })
       const compressedNfts = rpcAssetList.items.filter((item: any) => item.compression.compressed == true)
       let filteredArray = compressedNfts.filter((creatorArray: any) =>
         creatorArray.creators.some((creator: any) => creator.address === stakePoolData?.allowedCreators?.toString())
