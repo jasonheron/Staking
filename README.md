@@ -1,13 +1,8 @@
-# ASD Staking Website
+# Getting Started with Create React App
 
-This is a custom Solana Staking website for AllSportsDAO [https://allsportsdao.io]
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-NFTs earn $ASD depending on real work outcomes in the Premier League. 
-
-Gold = 50 for win, Silver = 20, Bronze = 10. Half for a draw. 
-
-
-## Getting Started
+## Available Scripts
 
 In the project directory, you can run:
 
