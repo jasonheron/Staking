@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ledgerhq/errors": "6.16.3",
     "@metaplex-foundation/digital-asset-standard-api": "^1.0.0",
     "@metaplex-foundation/js": "0.19.4",
     "@metaplex-foundation/mpl-bubblegum": "^3.1.0",
@@ -62,6 +63,7 @@
       "last 1 safari version"
     ]
   },
+  "overrides": { "@ledgerhq/errors": "6.16.3" },
   "devDependencies": {
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
