@@ -50,7 +50,7 @@ const Index = ({data, isSelected,stakeSeconds} : any) => {
                     ) : null}
             </p>
             <p className='text-white'>
-            <Countdown date={targetDate + 432000000} renderer={renderer} />
+            <Countdown date={targetDate + 120000} renderer={renderer} />
             </p>
             <div className='d-flex align-items-center justify-content-between'>
                 <div className='nft-details'>
